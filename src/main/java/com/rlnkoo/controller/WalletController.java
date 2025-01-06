@@ -1,10 +1,9 @@
 package com.rlnkoo.controller;
 
-import com.rlnkoo.model.Order;
-import com.rlnkoo.model.User;
-import com.rlnkoo.model.Wallet;
-import com.rlnkoo.model.WalletTransaction;
+import com.rlnkoo.model.*;
+import com.rlnkoo.response.PaymentResponse;
 import com.rlnkoo.service.OrderService;
+import com.rlnkoo.service.PaymentService;
 import com.rlnkoo.service.UserService;
 import com.rlnkoo.service.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/wallet")
-public class WaletController {
+public class WalletController {
 
     @Autowired
     private WalletService walletService;
@@ -24,6 +23,9 @@ public class WaletController {
 
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private PaymentService paymentService;
 
     @GetMapping("/api/wallet")
     public ResponseEntity<Wallet> getUserWallet(@RequestHeader("Authorization") String jwt) throws Exception {
@@ -56,6 +58,24 @@ public class WaletController {
 
         Wallet wallet = walletService.payOrderPayment(order, user);
 
+        return new ResponseEntity<>(wallet, HttpStatus.ACCEPTED);
+    }
+
+    @PutMapping("/api/wallet/deposit")
+    public ResponseEntity<Wallet> addBalanceToWallet(
+            @RequestHeader("Authorization") String jwt,
+            @RequestParam(name = "order_id") Long orderId,
+            @RequestParam(name = "payment_id") String paymentId) throws Exception {
+
+        User user = userService.findUserProfileByJwt(jwt);
+        Wallet wallet = walletService.getUserWallet(user);
+
+        PaymentOrder order = paymentService.getPaymentOrderById(orderId);
+        Boolean status = paymentService.proceedPaymentOrder(order, paymentId);
+
+        if (status) {
+            wallet = walletService.addBalance(wallet, order.getAmount());
+        }
         return new ResponseEntity<>(wallet, HttpStatus.ACCEPTED);
     }
 }
