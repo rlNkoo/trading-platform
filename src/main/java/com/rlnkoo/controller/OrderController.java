@@ -27,9 +27,6 @@ public class OrderController {
     @Autowired
     private CoinService coinService;
 
-//    @Autowired
-//    private WalletTransactionService walletTransactionService;
-
     @PostMapping("/pay")
     public ResponseEntity<Order> payOrderPayment(@RequestHeader("Authorization") String jwt,
                                                  @RequestBody CreateOrderRequest request) throws Exception {

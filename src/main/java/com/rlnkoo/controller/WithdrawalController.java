@@ -25,9 +25,6 @@ public class WithdrawalController {
     @Autowired
     private UserService userService;
 
-//    @Autowired
-//    private WalletTransactionService walletTransactionService;
-
     @PostMapping("/api/withdrawal/{amount}")
     public ResponseEntity<?> withdrawalRequest(
             @PathVariable Long amount,

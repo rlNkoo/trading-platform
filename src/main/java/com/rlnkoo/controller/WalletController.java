@@ -1,7 +1,6 @@
 package com.rlnkoo.controller;
 
 import com.rlnkoo.model.*;
-import com.rlnkoo.response.PaymentResponse;
 import com.rlnkoo.service.OrderService;
 import com.rlnkoo.service.PaymentService;
 import com.rlnkoo.service.UserService;
@@ -11,8 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+
 @RestController
-@RequestMapping("/api/wallet")
 public class WalletController {
 
     @Autowired
@@ -73,6 +73,9 @@ public class WalletController {
         PaymentOrder order = paymentService.getPaymentOrderById(orderId);
         Boolean status = paymentService.proceedPaymentOrder(order, paymentId);
 
+        if (wallet.getBalance() == null) {
+            wallet.setBalance(BigDecimal.valueOf(0));
+        }
         if (status) {
             wallet = walletService.addBalance(wallet, order.getAmount());
         }

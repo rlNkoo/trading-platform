@@ -8,6 +8,7 @@ import com.rlnkoo.response.AuthResponse;
 import com.rlnkoo.service.CustomeUserDetailsService;
 import com.rlnkoo.service.EmailService;
 import com.rlnkoo.service.TwoFactorOtpService;
+import com.rlnkoo.service.WatchlistService;
 import com.rlnkoo.utils.OtpUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -35,6 +36,9 @@ public class AuthController {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private WatchlistService watchlistService;
+
     @PostMapping("/signup")
     public ResponseEntity<AuthResponse> register(@RequestBody User user) throws Exception {
         User isEmailExist = userRepository.findByEmail(user.getEmail());
@@ -48,6 +52,8 @@ public class AuthController {
         newUser.setPassword(user.getPassword());
         newUser.setFullName(user.getFullName());
         User savedUser = userRepository.save(newUser);
+
+        watchlistService.createWatchList(savedUser);
 
         Authentication auth = new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword());
         SecurityContextHolder.getContext().setAuthentication(auth);
