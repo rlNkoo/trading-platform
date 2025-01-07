@@ -67,4 +67,4 @@ The Trading Platform is a robust application built to handle various aspects of 
 ### Payment Integration
 
 - **Payment Gateway Integration**  
-  Razorpay and Stripe are integrated for smooth and secure financial transactions.
+  Razorpay is integrated for smooth and secure financial transactions.
